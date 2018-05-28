@@ -109,12 +109,17 @@ done
 INDEX=0
 
 #Sample command for testing
-#tree /home | grep -o '[a-z,A-Z]xddd.*\..*' | sort | uniq -c | sort -nr
+#tree /home | grep -o '[a-z,A-Z].*\..*' | sort | uniq -c | sort -nr
+
+PREV_LINES=0
+PREV_CHARACTERS=0
+CURR_LINES=0
+CURR_CHARACTERS=0
 
 while [ $INDEX -lt ${#LIST_OF_STEPS[@]} ]; do
 	if [[ $INDEX != 0 ]]; then
 		printHeader $INDEX
-		if [[ "$FLAG_ALL" == 1 ]]; then
+		if [[ "$FLAG_ALL" == 1 && "$FLAG_CONTINUITY" == 0 ]]; then
 			echo Press any key to continue...
 			read -n 1
 		fi
@@ -138,7 +143,36 @@ while [ $INDEX -lt ${#LIST_OF_STEPS[@]} ]; do
 		exit
 	fi
 
+	CURR_LINES=$(wc -l < $TEMP_OUTPUT)
+	CURR_CHARACTERS=$(wc -c < $TEMP_OUTPUT)
+	DELTA_LINES=$((CURR_LINES-PREV_LINES))
+	DELTA_CHARACTERS=$((CURR_CHARACTERS-PREV_CHARACTERS))
+	if [[ $PREV_LINES != 0 && "$FLAG_CONTINUITY" == 0 ]]; then
+		echo -ne "\nDelta lines: "
+		if [[ "$DELTA_LINES" -gt 0 ]]; then
+			echo -ne "$(tput bold && tput setaf 2)+"
+			echo $DELTA_LINES
+		elif [[ "$DELTA_LINES" -lt 0 ]]; then
+			echo -ne "$(tput bold && tput setaf 1)"
+		fi
+		echo -ne "$(($DELTA_LINES*100/$PREV_LINES))$(tput sgr0)%\t\t"
+		echo -n "Delta characters: "
+		if [[ "$DELTA_CHARACTERS" -gt 0 ]]; then
+			echo -ne "$(tput bold && tput setaf 2)+"
+			echo $DELTA_CHARACTERS
+		elif [[ "$DELTA_CHARACTERS" -lt 0 ]]; then
+			echo -ne "$(tput bold && tput setaf 1)"
+		fi
+		echo -ne "$(($DELTA_CHARACTERS*100/$PREV_CHARACTERS))$(tput sgr0)%\n\n"
+	fi
+	PREV_LINES=$CURR_LINES
+	PREV_CHARACTERS=$CURR_CHARACTERS
+
 	printPostHeader $INDEX
+
+	#echo Linie: $PREV_LINES
+	#echo Znaki: $PREV_CHARACTERS
+
 	if [[ "$FLAG_ALL" == 1 && "$FLAG_CONTINUITY" == 0 ]]; then
 		echo Press any key to continue...
 		read -n 1
