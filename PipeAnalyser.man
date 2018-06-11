@@ -1,0 +1,42 @@
+.TH PIPEANALYSER 1
+.SH NAME
+PipeAnalyser \- simple testing and statistic gathering script for piped commands
+.SH SYNOPSIS
+.B PipeAnalyser
+[\fB\-t\fR\]
+[\fB\-a\fR\]
+[\fB\-c\fR\]
+[\fB\-h\fR\ \fILINES\fR]
+.SH Description
+.B PipeAnalyser
+is used for piped expression debugging. It asks for expression containing
+commands chained by pipes. It then breaks the expression into steps,
+evaluates them and return statistics. At each step part of the output specified
+by flags \fB\-h\fR\ and \fB\-a\fR is printed. Statistics include percent change
+in output lines and total number of characters.
+.SH OPTIONS
+.TP
+.B -t
+.br
+Print time used to execute each step.
+.TP
+.B -a
+.br
+Print whole output at each step.
+.TP
+.B -c
+.br
+Launch script in continuity mode. It simply returns first step which returns
+zero output, or informs if such situation doesn't occur.
+.TP
+.B -h \fILINES\fR
+.br
+Print number of lines from output at each step specified by \fILINES\fR.
+.SH BUGS
+To be found.
+.SH AUTHORS
+Adrian Misiak
+.br
+s171600@student.pg.edu.pl
+.SH SEE ALSO
+\fBbash\fR(1), \fBmore\fR(1)
